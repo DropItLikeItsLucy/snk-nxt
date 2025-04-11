@@ -1,0 +1,28 @@
+
+{
+    "TopBar": {
+      "promo": "Free Delivery Over 50 GEL",
+      "hours": "Mon-Fri: 9am - 6pm",
+      "phone": "Call: +995 123 456 789"
+    },
+    "Navbar": {
+      "home": "Home",
+      "product": "Product",
+      "markets": "Markets",
+      "blog": "Blog",
+      "about": "About Us",
+      "contact": "Contact",
+      "cart": "Cart",
+      "login": "Login / Register"
+    },
+    "Homepage": {
+      "buyDirectly": "Buy from Website",
+      "orderThrough": "Order through Delivery Partners",
+      "soldIn": "Sold in Markets"
+    },
+    "Button": {
+      "buyNow": "Buy Now",
+      "viewDetails": "View Details",
+      "readMore": "Read More"
+    }
+  }

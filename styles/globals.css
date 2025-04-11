@@ -1,0 +1,13 @@
+/* styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Add any other global styles or overrides below */
+body {
+  /* Example: Add some base padding or font smoothing */
+  /* padding: 0; */
+  /* margin: 0; */
+  /* -webkit-font-smoothing: antialiased; */
+  /* -moz-osx-font-smoothing: grayscale; */
+}
