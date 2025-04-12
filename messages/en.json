@@ -18,11 +18,17 @@
     "Homepage": {
       "buyDirectly": "Buy from Website",
       "orderThrough": "Order through Delivery Partners",
-      "soldIn": "Sold in Markets"
+      "soldIn": "Sold in Markets",
+      "metaTitle": "მთავარი",
+    "metaDescription": "შეიძინე Snacky მიწის თხილის კარაქი პირდაპირ ან იპოვე შენს საყვარელ სუპერმარკეტში. იხილე მიწოდების პარტნიორები." 
     },
     "Button": {
       "buyNow": "Buy Now",
       "viewDetails": "View Details",
       "readMore": "Read More"
-    }
+    },
+    "Metadata": {
+    "siteName": "Snacky (სნექი)", 
+    "defaultDescription": "უგემრიელესი და ჯანსაღი მიწის თხილის კარაქი, ხელმისაწვდომია ონლაინ და მაღაზიებში." 
+  }
   }

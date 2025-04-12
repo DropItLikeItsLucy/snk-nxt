@@ -1,8 +1,11 @@
 // app/[lang]/layout.tsx
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { NextIntlClientProvider, useMessages, createTranslator } from 'next-intl';
+import { NextIntlClientProvider, createTranslator } from 'next-intl';
+import { getMessagesForLocale } from '../../i18n'; // Import the named function
+
 import { notFound } from 'next/navigation';
+import React from 'react'; // Import React
 import { Inter } from 'next/font/google'; // Or your chosen font
 
 // Import your layout components
@@ -30,51 +33,51 @@ export function generateStaticParams() {
 
 // --- Updated generateMetadata ---
 export async function generateMetadata({ params: { lang } }: Props): Promise<Metadata> {
-  // Use try-catch for robustness
-  try {
-      const messages = (await import(`../../messages/${lang}.json`)).default;
-      // Provide a static type assertion if needed, or define MessageKeys type
-      const t = createTranslator({ locale: lang, messages });
-      const siteName = "Snacky"; // Or load from translations
-
-      return {
-          // Use translator function for title/description
-          title: {
-              default: siteName, // Default site title
-              template: `%s | ${siteName}`, // Template for page titles
-          },
-          description: t('Metadata.defaultDescription'), // Example key
-      };
-  } catch (error) {
-      console.error("Failed to generate metadata for lang:", lang, error);
-      // Return default metadata on error
-      return {
-          title: 'Snacky',
-          description: 'Delicious and healthy peanut butter.',
-      };
-  }
+  if (!locales.includes(lang)) { return { title: 'Snacky' }; }
+  let messages; try { messages = (await import(`../../messages/${lang}.json`)).default; } catch (error) { return { title: 'Snacky', description: 'Error loading content.' }; }
+  // Correct import for createTranslator
+  const t = createTranslator({ locale: lang, messages });
+  const siteName = t('Metadata.siteName') || "Snacky"; const defaultDescription = t('Metadata.defaultDescription') || 'Delicious and healthy peanut butter.';
+  return { title: { default: siteName, template: `%s | ${siteName}` }, description: defaultDescription };
 }
 // --- End of Updated generateMetadata ---
 
 
-export default function LocaleLayout({ children, params }: Props) { // Access params directly first
-  const lang = params.lang; // Then get lang
+export default async function LocaleLayout({ children, params }: Props) { // Must be async
+  const lang = params.lang;
+  if (!locales.includes(lang)) { notFound(); }
 
-  // REMOVED redundant validation: if (!locales.includes(lang as any)) notFound();
+  let messages;
+    try {
+        messages = await getMessagesForLocale(lang);
+    } catch (error) {
+         // Error handling might be redundant if getMessagesForLocale calls notFound()
+         console.error(`Error calling getMessagesForLocale for lang "${lang}" in layout:`, error);
+         notFound();
+    }
 
-  // useMessages should pick up context from i18n.ts
-  const messages = useMessages();
+  // Create translator here if needed, or just get strings
+  // const t = createTranslator({ locale: lang, messages });
+  // const pageSpecificTranslations = {
+  //     buyDirectly: t('Homepage.buyDirectly') || 'Buy from Website',
+  //     orderThrough: t('Homepage.orderThrough') || 'Order through Delivery Partners',
+  //     soldIn: t('Homepage.soldIn') || 'Sold in Markets'
+  // };
 
   return (
-    <html lang={lang} className={inter.className}>
-      <body>
-        <NextIntlClientProvider locale={lang} messages={messages}>
-          <TopBar />
-          <Header lang={lang} />
-          <main className="flex-grow">{children}</main>
-          <Footer lang={lang} />
-        </NextIntlClientProvider>
-      </body>
-    </html>
-  );
+        <html lang={lang} className={inter.className}>
+            <body>
+                {/* Pass explicitly loaded messages */}
+                <NextIntlClientProvider locale={lang} messages={messages}>
+                    <TopBar />
+                    <Header lang={lang} />
+                    <main className="flex-grow">
+                        {/* Pass props to children if using that pattern */}
+                        {React.isValidElement(children) ? React.cloneElement(children as React.ReactElement<any>, { /* Pass props if needed */ }) : children}
+                    </main>
+                    <Footer lang={lang} />
+                </NextIntlClientProvider>
+            </body>
+        </html>
+    );
 }
