@@ -1,11 +1,11 @@
-// app/[lang]/page.tsx
-import { createTranslator } from 'next-intl'; // Import createTranslator
-import type { Metadata } from 'next'; // Import Metadata type
+// app/[lang]/page.tsx (Ensure it matches THIS pattern)
+// NO next-intl imports needed here except for Metadata type maybe
+import type { Metadata } from 'next';
 import HeroSection from '@/components/sections/HeroSection';
 import DeliveryOptionsSection from '@/components/sections/DeliveryOptionsSection';
 import PartnerLogosSection from '@/components/sections/PartnerLogosSection';
 
-const locales = ['en', 'ka']; // Needed for metadata validation
+const locales = ['en', 'ka']; // For metadata validation
 
 // Define the expected shape of the props passed from layout
 type PageTranslations = {
@@ -16,35 +16,38 @@ type PageTranslations = {
 
 type Props = {
   params: { lang: string };
-  // Make sure the component accepts this prop
-  pageTranslations?: PageTranslations;
+  pageTranslations?: PageTranslations; // Prop from layout
 };
-// --- Updated generateMetadata ---
-export async function generateMetadata({ params: { lang } }: Props): Promise<Metadata> {
-  if (!locales.includes(lang)) { return { title: 'Snacky' }; }
-  let messages; try { messages = (await import(`../../messages/${lang}.json`)).default; } catch (error) { return { title: 'Snacky', description: 'Error loading content.' }; }
-  // Correct import location
-  const t = createTranslator({ locale: lang, messages });
-  const siteName = t('Metadata.siteName') || "Snacky"; const homeTitle = t('Homepage.metaTitle') || t('Navbar.home') || 'Home'; const homeDescription = t('Homepage.metaDescription') || 'Buy Snacky peanut butter...';
-  return { title: homeTitle, description: homeDescription, openGraph: { title: homeTitle, description: homeDescription } };
-}
 
-// Component is NOT async
+// Use MINIMAL metadata temporarily
+ export async function generateMetadata({ params: { lang } }: Props): Promise<Metadata> {
+     if (!locales.includes(lang)) { return { title: 'Snacky' }; }
+     // Bypassing i18n in metadata for now
+     return {
+         title: `Snacky (${lang}) - Page`,
+         description: `Test Description (${lang})`,
+     };
+ }
+
+// Component is NOT async, uses props
 export default function HomePage({ params, pageTranslations }: Props) {
-const lang = params.lang;
+  const lang = params.lang;
 
-// --- NO useTranslations or getTranslations calls here ---
+  // --- NO useTranslations or getTranslations calls here ---
 
-// Use translations passed as props
-const buyDirectlyText = pageTranslations?.buyDirectly || 'Buy from Website';
-const orderThroughText = pageTranslations?.orderThrough || 'Order through Delivery Partners';
-const soldInText = pageTranslations?.soldIn || 'Sold in Markets';
+  const buyDirectlyText = pageTranslations?.buyDirectly || 'Buy Fallback';
+  const orderThroughText = pageTranslations?.orderThrough || 'Order Fallback';
+  const soldInText = pageTranslations?.soldIn || 'SoldIn Fallback';
 
-return (
- <div>
-   <HeroSection buyDirectlyText={buyDirectlyText} lang={lang} />
-   <DeliveryOptionsSection title={orderThroughText} lang={lang} />
-   <PartnerLogosSection title={soldInText} lang={lang} />
- </div>
-);
+  console.log(`--- Rendering HomePage for ${lang} with text: ${buyDirectlyText} ---`); // Add log
+
+  return (
+    <div>
+      {/* Add a simple element to show it rendered */}
+      <h1 className="text-xl p-4">Home Page Test ({lang})</h1>
+      <HeroSection buyDirectlyText={buyDirectlyText} lang={lang} />
+      <DeliveryOptionsSection title={orderThroughText} lang={lang} />
+      <PartnerLogosSection title={soldInText} lang={lang} />
+    </div>
+  );
 }
